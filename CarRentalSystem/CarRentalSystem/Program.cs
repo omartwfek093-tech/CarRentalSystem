@@ -9,8 +9,9 @@ namespace CarRentalSystem
     #region Vehicle
     public abstract class Vehicle
     {
-
+        #region Attributes
         private double _dailyPrice;
+        #endregion
 
         #region properties
         public string PlateNumber { get; set; }
@@ -34,6 +35,7 @@ namespace CarRentalSystem
         }
         #endregion
 
+        #region Constructor
         public Vehicle (string plateNumber, string model, string color, double dailyPrice)
         {
             DailyPrice = dailyPrice;
@@ -42,6 +44,7 @@ namespace CarRentalSystem
             Color = color;
             IsAvailable = true;
         }
+        #endregion
 
         #region methods
         public void MarkAsRented()
@@ -89,7 +92,9 @@ namespace CarRentalSystem
     #region car
     public class Car : Vehicle
     {
+        #region Attributes
         private int _seatsCount;
+        #endregion
 
         #region properties
         public int SeatsCount
@@ -110,13 +115,14 @@ namespace CarRentalSystem
         public bool HasAC { get; set; }
         #endregion
 
+        #region Constructor
         public Car(string plateNumber, string model, string color, double dailyPrice, int seatsCount, bool hasAC)
             : base( plateNumber, model, color, dailyPrice)
         {
             SeatsCount = seatsCount;
             HasAC = hasAC;
         }
-
+        #endregion
 
         #region Methods
         public override double CalculateRent(int days)
