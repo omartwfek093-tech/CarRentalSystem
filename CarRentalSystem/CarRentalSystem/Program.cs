@@ -72,4 +72,76 @@ namespace CarRentalSystem
                 $"PlateNumber: {PlateNumber}\n" +
                 $"Model: {Model}\n" +
                 $"Color: {Color}\n" +
-                $"Daily Price: {DailyPrice} Egp\n
+                $"Daily Price: {DailyPrice} Egp\n" +
+                $"Status: {status}");
+        }
+        #endregion
+    }
+    #endregion
+
+    #region car
+    public class Car : Vehicle
+    {
+        private int _seatsCount;
+
+        #region properties
+        public int SeatsCount
+        {
+            get { return _seatsCount; }
+            set
+            {
+                if (value <= 5 && value > 0)
+                {
+                    _seatsCount = value;
+                }
+                else
+                {
+                    _seatsCount = 5;
+                }
+            }
+        }
+        public bool HasAC { get; set; }
+        #endregion
+
+        public Car(string plateNumber, string model, string color, double dailyPrice, int seatsCount, bool hasAC)
+            : base(plateNumber, model, color, dailyPrice)
+        {
+            SeatsCount = seatsCount;
+            HasAC = hasAC;
+        }
+
+        #region Methods
+        public override double CalculateRent(int days)
+        {
+            return (DailyPrice * days) + 100;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            string AcStatus;
+            if (HasAC == true)
+            {
+                AcStatus = "Yes";
+            }
+            else
+            {
+                AcStatus = "No";
+            }
+
+            Console.WriteLine($"Car Details: {SeatsCount} Seats , AC: {AcStatus}");
+        }
+        #endregion
+    }
+    #endregion
+
+    #endregion
+
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+
+        }
+    }
+}
