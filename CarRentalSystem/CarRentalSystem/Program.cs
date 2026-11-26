@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Drawing;
+using System.Net.NetworkInformation;
 
 namespace CarRentalSystem
 {
@@ -87,11 +89,147 @@ namespace CarRentalSystem
         }
     }
 
+    #region person2
+
+    #region Vehicle
+    public abstract class Vehicle
+    {
+        private double _dailyPrice;
+
+        #region properties
+        public string PlateNumber { get; set; }
+        public string Model { get; set; }
+        public string Color { get; set; }
+        public bool IsAvailable { get; private set; }
+        public double DailyPrice
+        {
+            get { return _dailyPrice; }
+            set
+            {
+                if (value > 0)
+                {
+                    _dailyPrice = value;
+                }
+                else
+                {
+                    _dailyPrice = 500;
+                }
+            }
+        }
+        #endregion
+
+        public Vehicle(string plateNumber, string model, string color, double dailyPrice)
+        {
+            DailyPrice = dailyPrice;
+            PlateNumber = plateNumber;
+            Model = model;
+            Color = color;
+            IsAvailable = true;
+        }
+
+        #region methods
+        public void MarkAsRented()
+        {
+            IsAvailable = false;
+        }
+
+        public void MarkAsAvailable()
+        {
+            IsAvailable = true;
+        }
+
+        public abstract double CalculateRent(int days);
+
+        public double CalculateRent(int days, double extraFees)
+        {
+            return CalculateRent(days) + extraFees;
+        }
+
+        public virtual void DisplayInfo()
+        {
+            string status;
+            if (IsAvailable == true)
+            {
+                status = "Available";
+            }
+            else
+            {
+                status = "Rented";
+            }
+
+            Console.WriteLine(
+                $"PlateNumber: {PlateNumber}\n" +
+                $"Model: {Model}\n" +
+                $"Color: {Color}\n" +
+                $"Daily Price: {DailyPrice} Egp\n" +
+                $"Status: {status}");
+        }
+        #endregion
+    }
+    #endregion
+
+    #region car
+    public class Car : Vehicle
+    {
+        private int _seatsCount;
+
+        #region properties
+        public int SeatsCount
+        {
+            get { return _seatsCount; }
+            set
+            {
+                if (value <= 5 && value > 0)
+                {
+                    _seatsCount = value;
+                }
+                else
+                {
+                    _seatsCount = 5;
+                }
+            }
+        }
+        public bool HasAC { get; set; }
+        #endregion
+
+        public Car(string plateNumber, string model, string color, double dailyPrice, int seatsCount, bool hasAC)
+            : base(plateNumber, model, color, dailyPrice)
+        {
+            SeatsCount = seatsCount;
+            HasAC = hasAC;
+        }
+
+        #region Methods
+        public override double CalculateRent(int days)
+        {
+            return (DailyPrice * days) + 100;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            string AcStatus;
+            if (HasAC == true)
+            {
+                AcStatus = "Yes";
+            }
+            else
+            {
+                AcStatus = "No";
+            }
+
+            Console.WriteLine($"Car Details: {SeatsCount} Seats , AC: {AcStatus}");
+        }
+        #endregion
+    }
+    #endregion
+
+    #endregion
+
     internal class Program
     {
         static void Main(string[] args)
         {
-            
             Customer customer1 = new Customer(
                 name: "Nour Hassan",
                 street: "15 El-Galaa St.",
@@ -104,6 +242,21 @@ namespace CarRentalSystem
             customer1.IncrementRentals();
             customer1.IncrementRentals();
             customer1.DisplayInfo();
+
+            Console.WriteLine();
+
+            Car car1 = new Car(
+                plateNumber: "ABC-1234",
+                model: "Toyota Corolla",
+                color: "Silver",
+                dailyPrice: 800,
+                seatsCount: 5,
+                hasAC: true
+            );
+
+            car1.MarkAsRented();
+            car1.DisplayInfo();
+            Console.WriteLine($"Total Rent (3 days): {car1.CalculateRent(3)} Egp");
         }
     }
 }
