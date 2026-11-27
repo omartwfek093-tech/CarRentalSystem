@@ -341,6 +341,90 @@ namespace CarRentalSystem
 
     #endregion
 
+    #region person4
+
+    #region RentalContract
+    public class RentalContract
+    {
+        #region properties
+        public int ContractId { get; private set; }
+        public Customer Customer { get; private set; }
+        public Vehicle Vehicle { get; private set; }
+        public int PlannedDays { get; private set; }
+        public int ActualDays { get; private set; }
+        public bool IsClosed { get; private set; }
+        #endregion
+
+        #region Constructor
+        public RentalContract(int contractId, Customer customer, Vehicle vehicle, int plannedDays)
+        {
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer), "Customer data is required");
+
+            if (vehicle == null)
+                throw new ArgumentNullException(nameof(vehicle), "Vehicle data is required");
+
+            if (plannedDays <= 0)
+                throw new ArgumentException("The agreed-upon number of days must be greater than zero", nameof(plannedDays));
+
+            if (!vehicle.IsAvailable)
+                throw new InvalidOperationException($"The vehicle is not available now ({vehicle.Model})");
+
+            ContractId = contractId;
+            Customer = customer;
+            Vehicle = vehicle;
+            PlannedDays = plannedDays;
+            ActualDays = 0;
+            IsClosed = false;
+
+            vehicle.MarkAsRented();
+            customer.IncrementRentals();
+        }
+        #endregion
+
+        #region Methods
+        public void CloseContract(int actualDays)
+        {
+            if (IsClosed)
+                throw new InvalidOperationException("The cintract is already locked.");
+
+            if (actualDays < 0)
+                throw new ArgumentException("The actualdays must be greater than zero", nameof(actualDays));
+
+            ActualDays = actualDays;
+            IsClosed = true;
+            Vehicle.MarkAsAvailable();
+        }
+
+        public int GetLateDays()
+        {
+            if (ActualDays > PlannedDays)
+                return ActualDays - PlannedDays;
+
+            return 0;
+        }
+
+        public void DisplayContract()
+        {
+            string status = IsClosed ? "Closed" : "Open";
+            int lateDays = GetLateDays();
+
+            Console.WriteLine("----- Rental Contract Details -----");
+            Console.WriteLine($"Contract ID: {ContractId}");
+            Console.WriteLine($"Customer: {Customer.Name}");
+            Console.WriteLine($"Vehicle: {Vehicle.Model}");
+            Console.WriteLine($"Planned Days: {PlannedDays}");
+            Console.WriteLine($"Actual Days: {(IsClosed ? ActualDays.ToString() : "Not returned yet")}");
+            Console.WriteLine($"Status: {status}");
+            Console.WriteLine($"Late Days: {lateDays}");
+            Console.WriteLine("-----------------------------------");
+        }
+        #endregion
+    }
+    #endregion
+
+    #endregion
+
     internal class Program
     {
         static void Main(string[] args)
