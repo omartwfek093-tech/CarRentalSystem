@@ -164,12 +164,13 @@ namespace CarRentalSystem
                 status = "Rented";
             }
 
-            Console.WriteLine(
+            Console.WriteLine($"----- Vehicle Info -----\n" +
                 $"PlateNumber: {PlateNumber}\n" +
                 $"Model: {Model}\n" +
                 $"Color: {Color}\n" +
                 $"Daily Price: {DailyPrice} Egp\n" +
-                $"Status: {status}");
+                $"Status: {status}" +
+                $"-------------------------");
         }
         #endregion
 
