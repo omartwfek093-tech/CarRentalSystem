@@ -5,22 +5,52 @@ namespace CarRentalSystem
     #region Address
     public class Address
     {
-        #region properties
-        public string Street { get; private set; }
-        public string City { get; private set; }
+        #region attributes
+        private string _Street;
+        private string _City;
         #endregion
 
+        #region properties
+        public string Street
+        {
+            get { return _Street; }
+            set
+            {
+                if (value == null || value == "")
+                {
+                    _Street = "Unknown";
+                }
+                else
+                {
+                    _Street = value;
+                }
+            }
+        }
+
+        public string City
+        {
+            get { return _City; }
+            set
+            {
+                if (value == null || value == "")
+                {
+                    _City = "Unknown";
+                }
+                else
+                {
+                    _City = value;
+                }
+            }
+        }
+        #endregion
+
+        #region Constructor
         public Address(string street, string city)
         {
-            if (string.IsNullOrWhiteSpace(street))
-                throw new ArgumentException("Street cannot be empty.");
-
-            if (string.IsNullOrWhiteSpace(city))
-                throw new ArgumentException("City cannot be empty.");
-
-            Street = street.Trim();
-            City = city.Trim();
+            Street = street;
+            City = city;
         }
+        #endregion
 
         #region methods
         public string GetFullAddress()
@@ -28,44 +58,81 @@ namespace CarRentalSystem
             return $"{Street}, {City}";
         }
         #endregion
+
     }
     #endregion
 
     #region Customer
     public class Customer
     {
-        #region properties
-        public string Name { get; private set; }
-        public Address Address { get; private set; }
-        public string Phone { get; private set; }
-        public string LicenseNumber { get; private set; }
-        public bool IsVIP { get; private set; }
-        public int RentalsCount { get; private set; }
+        #region attributes
+        private string _Phone;
+        private string _LicenseNumber;
         #endregion
 
-        public Customer(string name, string street, string city, string phone, string licenseNumber, bool isVIP)
+        #region properties
+        public string Name { get; set; }
+        public Address Address { get; private set; }
+        public bool IsVIP { get; set; }
+        public int RentalsCount { get; private set; }
+
+        public string Phone
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name cannot be empty.");
+            get { return _Phone; }
+            set
+            {
+                if (value == null || value == "")
+                {
+                    _Phone = "Unknown";
+                }
+                else
+                {
+                    _Phone = value;
+                }
+            }
+        }
 
-            if (string.IsNullOrWhiteSpace(phone))
-                throw new ArgumentException("Phone cannot be empty.");
+        public string LicenseNumber
+        {
+            get { return _LicenseNumber; }
+            set
+            {
+                if (value == null || value == "")
+                {
+                    _LicenseNumber = "Unknown";
+                }
+                else
+                {
+                    _LicenseNumber = value;
+                }
+            }
+        }
+        #endregion
 
-            if (string.IsNullOrWhiteSpace(licenseNumber))
-                throw new ArgumentException("License number cannot be empty.");
-
-            Name = name.Trim();
+        #region Constructor
+        public Customer(string name, string street, string city,
+            string phone, string licenseNumber, bool isVIP)
+        {
+            Name = name;
             Address = new Address(street, city);
-            Phone = phone.Trim();
-            LicenseNumber = licenseNumber.Trim();
+            Phone = phone;
+            LicenseNumber = licenseNumber;
             IsVIP = isVIP;
             RentalsCount = 0;
         }
+        #endregion
 
         #region methods
         public double GetDiscountRate()
         {
-            return IsVIP ? 0.15 : 0.0;
+            if (IsVIP == true)
+            {
+                return 0.10;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public void IncrementRentals()
@@ -75,16 +142,25 @@ namespace CarRentalSystem
 
         public void DisplayInfo()
         {
-            string customerType = IsVIP ? "VIP" : "Regular";
+            string customerType;
 
-            Console.WriteLine("----- Customer Info -----");
-            Console.WriteLine($"Name: {Name}");
-            Console.WriteLine($"Address: {Address.GetFullAddress()}");
-            Console.WriteLine($"Phone: {Phone}");
-            Console.WriteLine($"License Number: {LicenseNumber}");
-            Console.WriteLine($"Customer Type: {customerType}");
-            Console.WriteLine($"Rentals Count: {RentalsCount}");
-            Console.WriteLine("-------------------------");
+            if (IsVIP == true)
+            {
+                customerType = "VIP";
+            }
+            else
+            {
+                customerType = "Regular";
+            }
+
+            Console.WriteLine($"----- Customer Info -----\n" +
+                $"Name: {Name}\n" +
+                $"Address: {Address.GetFullAddress()}\n" +
+                $"Phone: {Phone}\n" +
+                $"License Number: {LicenseNumber}\n" +
+                $"Customer Type: {customerType}\n" +
+                $"Rentals Count: {RentalsCount}\n" +
+                $"-------------------------");
         }
         #endregion
     }
@@ -164,13 +240,13 @@ namespace CarRentalSystem
                 status = "Rented";
             }
 
-            Console.WriteLine($"----- Vehicle Info -----\n" +
+            Console.WriteLine($"\n----- Vehicle Info -----\n" +
                 $"PlateNumber: {PlateNumber}\n" +
                 $"Model: {Model}\n" +
                 $"Color: {Color}\n" +
                 $"Daily Price: {DailyPrice} Egp\n" +
-                $"Status: {status}" +
-                $"-------------------------");
+                $"Status: {status}\n" +
+                $"------------------------------------------------------");
         }
         #endregion
 
@@ -525,7 +601,7 @@ namespace CarRentalSystem
 
         public void ShowAvailableVehicles()
         {
-            Console.WriteLine("===== Available Vehicles =====");
+            Console.WriteLine("\n===== Available Vehicles =====");
             foreach (var v in Vehicles)
             {
                 if (v.IsAvailable)
@@ -588,87 +664,97 @@ namespace CarRentalSystem
                 Console.Write("Choose an option: ");
                 string choice = Console.ReadLine();
 
-                try
+                switch (choice)
                 {
-                    switch (choice)
-                    {
-                        case "1":
-                            showroom.ShowAvailableVehicles();
-                            break;
+                    case "1":
+                        showroom.ShowAvailableVehicles();
+                        break;
 
-                        case "2":
-                            showroom.ShowAvailableVehicles();
+                    case "2":
+                        showroom.ShowAvailableVehicles();
 
-                            Console.WriteLine("\n--- Enter Your Details ---");
-                            Console.Write("Name: ");
-                            string name = Console.ReadLine();
-                            Console.Write("Street: ");
-                            string street = Console.ReadLine();
-                            Console.Write("City: ");
-                            string city = Console.ReadLine();
-                            Console.Write("Phone: ");
-                            string phone = Console.ReadLine();
-                            Console.Write("License Number: ");
-                            string license = Console.ReadLine();
-                            Console.Write("Are you a VIP customer? (y/n): ");
-                            bool isVip = Console.ReadLine()?.Trim().ToLower() == "y";
+                        Console.WriteLine("\n--- Enter Your Details ---");
+                        Console.Write("Name: ");
+                        string name = Console.ReadLine();
+                        Console.Write("Street: ");
+                        string street = Console.ReadLine();
+                        Console.Write("City: ");
+                        string city = Console.ReadLine();
+                        Console.Write("Phone: ");
+                        string phone = Console.ReadLine();
+                        Console.Write("License Number: ");
+                        string license = Console.ReadLine();
+                        Console.Write("Are you a VIP customer? (y/n): ");
+                        bool isVip = Console.ReadLine().ToLower() == "y";
 
-                            Customer customer = new Customer(name, street, city, phone, license, isVip);
-                            showroom.AddCustomer(customer);
+                        Customer customer = new Customer(name, street, city, phone, license, isVip);
+                        showroom.AddCustomer(customer);
 
-                            Console.Write("\nEnter Vehicle Plate Number (e.g., KIA-201): ");
-                            string plate = Console.ReadLine()?.Trim();
-                            Vehicle selectedVehicle = showroom.Vehicles.Find(v => v.PlateNumber.Equals(plate, StringComparison.OrdinalIgnoreCase) && v.IsAvailable);
+                        Console.Write("\nEnter Vehicle Plate Number (e.g., KIA-201): ");
+                        string plate = Console.ReadLine();
 
-                            if (selectedVehicle == null)
+                        Vehicle selectedVehicle = null;
+                        foreach (var v in showroom.Vehicles)
+                        {
+                            if (v.PlateNumber == plate && v.IsAvailable)
                             {
-                                Console.WriteLine("Vehicle not found or not available!");
+                                selectedVehicle = v;
                                 break;
                             }
+                        }
 
-                            Console.Write("Planned Rental Days: ");
-                            int days = int.Parse(Console.ReadLine());
-
-                            RentalContract contract = showroom.StartRental(nextContractId++, customer, selectedVehicle, days);
-                            Console.WriteLine("\nRental Successful!");
-                            contract.DisplayContract();
+                        if (selectedVehicle == null)
+                        {
+                            Console.WriteLine("Vehicle not found or not available!");
                             break;
+                        }
 
-                        case "3":
-                            Console.Write("\nEnter Contract ID: ");
-                            int contractId = int.Parse(Console.ReadLine());
+                        Console.Write("Planned Rental Days: ");
+                        int days = int.Parse(Console.ReadLine());
 
-                            RentalContract activeContract = showroom.Contracts.Find(c => c.ContractId == contractId && !c.IsClosed);
+                        RentalContract contract = showroom.StartRental(nextContractId++, customer, selectedVehicle, days);
+                        Console.WriteLine("\nRental Successful!");
+                        contract.DisplayContract();
+                        break;
 
-                            if (activeContract == null)
+                    case "3":
+                        Console.Write("\nEnter Contract ID: ");
+                        int contractId = int.Parse(Console.ReadLine());
+
+                        RentalContract activeContract = null;
+                        foreach (var c in showroom.Contracts)
+                        {
+                            if (c.ContractId == contractId && !c.IsClosed)
                             {
-                                Console.WriteLine("Active contract not found!");
+                                activeContract = c;
                                 break;
                             }
+                        }
 
-                            Console.Write("Actual Days Used: ");
-                            int actualDays = int.Parse(Console.ReadLine());
-
-                            Console.Write("Payment Method (Cash / Visa): ");
-                            string paymentMethod = Console.ReadLine();
-
-                            Console.WriteLine("\n===== Invoice =====");
-                            showroom.EndRental(nextInvoiceId++, activeContract, actualDays, paymentMethod);
+                        if (activeContract == null)
+                        {
+                            Console.WriteLine("Active contract not found!");
                             break;
+                        }
 
-                        case "4":
-                            running = false;
-                            Console.WriteLine("Goodbye!");
-                            break;
+                        Console.Write("Actual Days Used: ");
+                        int actualDays = int.Parse(Console.ReadLine());
 
-                        default:
-                            Console.WriteLine("Invalid option, try again.");
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
+                        Console.Write("Payment Method (Cash / Visa): ");
+                        string paymentMethod = Console.ReadLine();
+
+                        Console.WriteLine("\n===== Invoice =====");
+                        showroom.EndRental(nextInvoiceId++, activeContract, actualDays, paymentMethod);
+                        break;
+
+                    case "4":
+                        running = false;
+                        Console.WriteLine("Goodbye!");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option, try again.");
+                        break;
                 }
             }
         }
