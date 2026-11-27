@@ -425,6 +425,51 @@ namespace CarRentalSystem
 
     #endregion
 
+    #region person5
+
+    #region Invoice
+    public class Invoice
+    {
+        #region properties
+        public int InvoiceId { get; }
+        public RentalContract Contract { get; }
+        public string PaymentMethod { get; set; }
+        public double BaseAmount { get; }
+        public double DiscountAmount { get; }
+        public double LateFee { get; }
+        public double FinalTotal { get; }
+        #endregion
+
+        #region constractor
+        public Invoice (int invoiceId , RentalContract contract , string paymentmethod)
+        {
+            InvoiceId= invoiceId;
+            Contract= contract;
+            PaymentMethod= paymentmethod;
+
+            BaseAmount = contract.Vehicle.CalculateRent(contract.PlannedDays);
+            DiscountAmount = BaseAmount * contract.Customer.GetDiscountRate();
+            LateFee = contract.GetLateDays() * (contract.Vehicle.DailyPrice * 1.5);
+            FinalTotal = BaseAmount - DiscountAmount + LateFee;
+        }
+        #endregion
+
+        #region Methods
+        public void PrintInvoice()
+        {
+            Console.WriteLine($"Invoice ID: {InvoiceId}");
+            Console.WriteLine($"Payment Method: {PaymentMethod}");
+            Console.WriteLine($"BaseAmount :{BaseAmount} ");
+            Console.WriteLine($"DiscountAmount :{DiscountAmount} ");
+            Console.WriteLine($"LateFee :{LateFee} ");
+            Console.WriteLine($"FinalTotal :{FinalTotal} ");
+        }
+        #endregion
+    }
+    #endregion
+
+    #endregion
+
     internal class Program
     {
         static void Main(string[] args)
