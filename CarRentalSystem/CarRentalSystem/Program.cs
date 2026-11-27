@@ -1,5 +1,3 @@
-using CarRentalSystem;
-
 namespace CarRentalSystem
 {
     #region person1
@@ -231,16 +229,133 @@ namespace CarRentalSystem
 
     #endregion
 
-    #region person4 
-    internal class RentalContract
+    #region person3
+
+    #region Motorcycle
+    public class Motorcycle : Vehicle
     {
+        #region attributes
+        private int _engineCC;
+        #endregion
+
+        #region properties
+        public int EngineCC
+        {
+            get { return _engineCC; }
+            set
+            {
+                if (value > 0)
+                {
+                    _engineCC = value;
+                }
+                else
+                {
+                    _engineCC = 150;
+                }
+            }
+        }
+        public bool HasHelmet { get; set; }
+        #endregion
+
+        #region Constructor
+        public Motorcycle(string plateNumber, string model, string color, double dailyPrice, int engineCC, bool hasHelmet)
+            : base(plateNumber, model, color, dailyPrice)
+        {
+            EngineCC = engineCC;
+            HasHelmet = hasHelmet;
+        }
+        #endregion
+
+        #region Methods
+        public override double CalculateRent(int days)
+        {
+            return (DailyPrice * days) + 50;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            string helmetStatus;
+            if (HasHelmet == true)
+            {
+                helmetStatus = "Yes";
+            }
+            else
+            {
+                helmetStatus = "No";
+            }
+
+            Console.WriteLine($"Motorcycle Details: {EngineCC} CC , Has Helmet: {helmetStatus}");
+        }
+        #endregion
+    }
+    #endregion
+
+    #region Van
+    public class Van : Vehicle
+    {
+        #region attributes
+        private double _cargoCapacity;
+        #endregion
+
+        #region properties
+        public double CargoCapacity
+        {
+            get { return _cargoCapacity; }
+            set
+            {
+                if (value > 0)
+                {
+                    _cargoCapacity = value;
+                }
+                else
+                {
+                    _cargoCapacity = 500;
+                }
+            }
+        }
+        #endregion
+
+        #region Constructor
+        public Van(string plateNumber, string model, string color, double dailyPrice, double cargoCapacity)
+            : base(plateNumber, model, color, dailyPrice)
+        {
+            CargoCapacity = cargoCapacity;
+        }
+        #endregion
+
+        #region Methods
+        public override double CalculateRent(int days)
+        {
+            return (DailyPrice * days) + 300;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Van Details: Cargo Capacity = {CargoCapacity} Kg");
+        }
+        #endregion
+    }
+    #endregion
+
+    #endregion
+
+    #region person4
+
+    #region RentalContract
+    public class RentalContract
+    {
+        #region properties
         public int ContractId { get; private set; }
         public Customer Customer { get; private set; }
         public Vehicle Vehicle { get; private set; }
         public int PlannedDays { get; private set; }
         public int ActualDays { get; private set; }
         public bool IsClosed { get; private set; }
+        #endregion
 
+        #region Constructor
         public RentalContract(int contractId, Customer customer, Vehicle vehicle, int plannedDays)
         {
             if (customer == null)
@@ -265,10 +380,11 @@ namespace CarRentalSystem
             vehicle.MarkAsRented();
             customer.IncrementRentals();
         }
+        #endregion
 
+        #region Methods
         public void CloseContract(int actualDays)
         {
-
             if (IsClosed)
                 throw new InvalidOperationException("The cintract is already locked.");
 
@@ -303,14 +419,18 @@ namespace CarRentalSystem
             Console.WriteLine($"Late Days: {lateDays}");
             Console.WriteLine("-----------------------------------");
         }
+        #endregion
     }
-}
-#endregion
+    #endregion
 
-internal class Program
+    #endregion
+
+
+    internal class Program
     {
         static void Main(string[] args)
         {
-       
+
+        }
     }
-    }
+}
