@@ -425,7 +425,6 @@ namespace CarRentalSystem
 
     #endregion
 
-
     internal class Program
     {
         static void Main(string[] args)
