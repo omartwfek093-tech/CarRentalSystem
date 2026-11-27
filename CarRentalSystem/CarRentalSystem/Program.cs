@@ -481,11 +481,195 @@ namespace CarRentalSystem
 
     #endregion
 
+    #region person6
+
+    #region Showroom
+
+    public class Showroom
+    {
+        #region properties
+
+        public List<Vehicle> Vehicles { get; private set; }
+        public List<Customer> Customers { get; private set; }
+        public List<RentalContract> Contracts { get; private set; }
+        public List<Invoice> Invoices { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public Showroom()
+        {
+            Vehicles = new List<Vehicle>();
+            Customers = new List<Customer>();
+            Contracts = new List<RentalContract>();
+            Invoices = new List<Invoice>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void AddVehicle(Vehicle vehicle)
+        {
+            if (vehicle != null)
+                Vehicles.Add(vehicle);
+        }
+
+        public void AddCustomer(Customer customer)
+        {
+            if (customer != null)
+                Customers.Add(customer);
+        }
+
+        public void ShowAvailableVehicles()
+        {
+            Console.WriteLine("===== Available Vehicles =====");
+            foreach (var v in Vehicles)
+            {
+                if (v.IsAvailable)
+                {
+                    v.DisplayInfo();
+                    Console.WriteLine("-----------------------------------------------");
+                }
+            }
+        }
+
+        public RentalContract StartRental(int contractId, Customer customer, Vehicle vehicle, int days)
+        {
+            RentalContract contract = new RentalContract(contractId, customer, vehicle, days);
+            Contracts.Add(contract);
+            return contract;
+        }
+
+        public Invoice EndRental(int invoiceId, RentalContract contract, int actualDays, string paymentMethod)
+        {
+            contract.CloseContract(actualDays);
+            Invoice invoice = new Invoice(invoiceId, contract, paymentMethod);
+            Invoices.Add(invoice);
+            invoice.PrintInvoice();
+            return invoice;
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #endregion
+
     internal class Program
     {
         static void Main(string[] args)
         {
+            Showroom showroom = new Showroom();
 
+            showroom.AddVehicle(new Car("ABC-123", "Toyota Corolla", "White", 800, 5, true));
+            showroom.AddVehicle(new Car("KIA-201", "Kia Cerato", "Black", 750, 5, true));
+            showroom.AddVehicle(new Car("HYU-305", "Hyundai Elantra", "Silver", 850, 5, true));
+            showroom.AddVehicle(new Car("BMW-520", "BMW 520i", "Blue", 2000, 5, true));
+            showroom.AddVehicle(new Motorcycle("MOT-456", "Yamaha R3", "Black", 300, 321, true));
+            showroom.AddVehicle(new Motorcycle("HON-600", "Honda CBR", "Red", 450, 600, true));
+            showroom.AddVehicle(new Van("VAN-789", "Mercedes Sprinter", "Silver", 1200, 1500));
+            showroom.AddVehicle(new Van("TOY-900", "Toyota HiAce", "White", 1000, 1200));
+
+            int nextContractId = 1;
+            int nextInvoiceId = 101;
+            bool running = true;
+
+            while (running)
+            {
+                Console.WriteLine("\n========= Car Rental System =========");
+                Console.WriteLine("1. Show Available Vehicles");
+                Console.WriteLine("2. Rent a Vehicle");
+                Console.WriteLine("3. Return Vehicle & Print Invoice");
+                Console.WriteLine("4. Exit");
+                Console.Write("Choose an option: ");
+                string choice = Console.ReadLine();
+
+                try
+                {
+                    switch (choice)
+                    {
+                        case "1":
+                            showroom.ShowAvailableVehicles();
+                            break;
+
+                        case "2":
+                            showroom.ShowAvailableVehicles();
+
+                            Console.WriteLine("\n--- Enter Your Details ---");
+                            Console.Write("Name: ");
+                            string name = Console.ReadLine();
+                            Console.Write("Street: ");
+                            string street = Console.ReadLine();
+                            Console.Write("City: ");
+                            string city = Console.ReadLine();
+                            Console.Write("Phone: ");
+                            string phone = Console.ReadLine();
+                            Console.Write("License Number: ");
+                            string license = Console.ReadLine();
+                            Console.Write("Are you a VIP customer? (y/n): ");
+                            bool isVip = Console.ReadLine()?.Trim().ToLower() == "y";
+
+                            Customer customer = new Customer(name, street, city, phone, license, isVip);
+                            showroom.AddCustomer(customer);
+
+                            Console.Write("\nEnter Vehicle Plate Number (e.g., KIA-201): ");
+                            string plate = Console.ReadLine()?.Trim();
+                            Vehicle selectedVehicle = showroom.Vehicles.Find(v => v.PlateNumber.Equals(plate, StringComparison.OrdinalIgnoreCase) && v.IsAvailable);
+
+                            if (selectedVehicle == null)
+                            {
+                                Console.WriteLine("Vehicle not found or not available!");
+                                break;
+                            }
+
+                            Console.Write("Planned Rental Days: ");
+                            int days = int.Parse(Console.ReadLine());
+
+                            RentalContract contract = showroom.StartRental(nextContractId++, customer, selectedVehicle, days);
+                            Console.WriteLine("\nRental Successful!");
+                            contract.DisplayContract();
+                            break;
+
+                        case "3":
+                            Console.Write("\nEnter Contract ID: ");
+                            int contractId = int.Parse(Console.ReadLine());
+
+                            RentalContract activeContract = showroom.Contracts.Find(c => c.ContractId == contractId && !c.IsClosed);
+
+                            if (activeContract == null)
+                            {
+                                Console.WriteLine("Active contract not found!");
+                                break;
+                            }
+
+                            Console.Write("Actual Days Used: ");
+                            int actualDays = int.Parse(Console.ReadLine());
+
+                            Console.Write("Payment Method (Cash / Visa): ");
+                            string paymentMethod = Console.ReadLine();
+
+                            Console.WriteLine("\n===== Invoice =====");
+                            showroom.EndRental(nextInvoiceId++, activeContract, actualDays, paymentMethod);
+                            break;
+
+                        case "4":
+                            running = false;
+                            Console.WriteLine("Goodbye!");
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid option, try again.");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
         }
     }
 }
